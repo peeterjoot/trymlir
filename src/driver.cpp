@@ -3,21 +3,35 @@
 #include <string>
 
 #include "ToyDialect.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/InitLLVM.h"
 #include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/IR/AsmState.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/MLIRContext.h"
+#include "mlir/IR/Location.h"
+
+static llvm::cl::opt<std::string> inputFilename(
+    llvm::cl::Positional, llvm::cl::desc( "<input file>" ),
+    llvm::cl::init( "-" ), llvm::cl::value_desc( "filename" ) );
 
 // Fake location info function (replace with your implementation if needed)
 // mlir::Location getLocation(int line) {
 //  return mlir::UnknownLoc::get(&context);
 //}
+//#define getLocation( line ) \
+//    mlir::FileLineColLoc::get( builder.getStringAttr( inputFilename ), line, 1 )
 #define getLocation( line ) \
-    mlir::FileLineColLoc::get( builder.getStringAttr( inputFilename ), line, 1 )
+    mlir::UnknownLoc::get(&context)
 
 int main( int argc, char **argv )
 {
+    llvm::InitLLVM init( argc, argv );
+    llvm::cl::ParseCommandLineOptions( argc, argv, "Calculator compiler\n" );
+
+    std::cout << std::format( "Processing: {}\n", inputFilename.c_str() );
+
     mlir::MLIRContext context;
     context.getOrLoadDialect<toy::ToyDialect>();
 
