@@ -9,11 +9,11 @@
 #include <string>
 
 // Fake location info function (replace with your implementation if needed)
-mlir::Location getLocation(int line) {
-  return mlir::UnknownLoc::get(&context);
-}
-//#define getLocation(line) \
-//    mlir::FileLineColLoc::get(builder.getStringAttr(inputFilename), line, 1)
+//mlir::Location getLocation(int line) {
+//  return mlir::UnknownLoc::get(&context);
+//}
+#define getLocation(line) \
+    mlir::FileLineColLoc::get(builder.getStringAttr(inputFilename), line, 1)
 
 int main(int argc, char **argv) {
   mlir::MLIRContext context;
