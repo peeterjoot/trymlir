@@ -3,6 +3,8 @@
 #include "mlir/Support/TypeID.h"
 #include "mlir/IR/BuiltinDialect.h"
 #include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/IR/BuiltinTypes.h"
+#include "mlir/Support/LogicalResult.h"
 
 // Define aliases for dependent dialects
 using builtin = mlir::BuiltinDialect;
@@ -31,9 +33,18 @@ void ToyDialect::initialize() {
 
 void ToyDialect::printType(mlir::Type type,
                            mlir::DialectAsmPrinter &printer) const {
-  if (type.isa<VarType>()) {
+  if (mlir::isa<VarType>(type)) {
     printer << "var";
   }
+}
+
+llvm::LogicalResult AssignOp::readProperties(mlir::DialectBytecodeReader &reader,
+                                             mlir::OperationState &state) {
+  mlir::StringAttr nameAttr;
+  if (failed(reader.readAttribute(nameAttr)))
+    return llvm::failure();
+  state.addAttribute("name", nameAttr);
+  return llvm::success();
 }
 
 } // namespace toy

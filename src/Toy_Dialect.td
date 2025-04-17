@@ -44,6 +44,10 @@ def Toy_DeclOp : Op<Toy_Dialect, "decl"> {
   }];
 
   let traits = [Pure];
+
+  let builders = [
+    OpBuilder<(ins "::llvm::StringRef":$name, "::mlir::Value":$value)>
+  ];
 }
 
 // Operation: toy.assign (x = 5;)
@@ -64,6 +68,10 @@ def Toy_AssignOp : Op<Toy_Dialect, "assign"> {
   let assemblyFormat = [{
     $varName `,` $value `:` type($value) attr-dict
   }];
+
+  let builders = [
+    OpBuilder<(ins "::llvm::StringRef":$name, "::mlir::Value":$value)>
+  ];
 }
 
 // Operation: toy.print (PRINT x;)
@@ -84,4 +92,8 @@ def Toy_PrintOp : Op<Toy_Dialect, "print"> {
   let assemblyFormat = [{
     $varName `,` $var `:` type($var) attr-dict
   }];
+
+  let builders = [
+    OpBuilder<(ins "::llvm::StringRef":$name, "::mlir::Value":$value)>
+  ];
 }

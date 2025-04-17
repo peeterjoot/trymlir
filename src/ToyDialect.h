@@ -7,6 +7,8 @@
 #include "mlir/Interfaces/SideEffectInterfaces.h"
 #include "mlir/Bytecode/BytecodeOpInterface.h"
 #include "mlir/Interfaces/InferTypeOpInterface.h"
+#include "mlir/IR/Builders.h"
+#include "llvm/ADT/StringRef.h"
 
 // Include the generated type declarations
 #define GET_TYPEDEF_CLASSES
