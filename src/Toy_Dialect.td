@@ -13,6 +13,9 @@ def Toy_Dialect : Dialect {
   }];
   let cppNamespace = "::toy";
   let dependentDialects = ["builtin", "arith"];
+  let extraClassDeclaration = [{
+    void printType(::mlir::Type type, ::mlir::DialectAsmPrinter &printer) const;
+  }];
 }
 
 // Define a custom type for Toy variables

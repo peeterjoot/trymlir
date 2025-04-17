@@ -24,13 +24,11 @@ void ToyDialect::initialize() {
   >();
 }
 
-#if 0
 void ToyDialect::printType(mlir::Type type,
                            mlir::DialectAsmPrinter &printer) const {
   if (type.isa<VarType>()) {
     printer << "var";
   }
 }
-#endif
 
 } // namespace toy
