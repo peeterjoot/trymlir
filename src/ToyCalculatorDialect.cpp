@@ -11,6 +11,11 @@ using arith = mlir::arith::ArithDialect;
 // Include generated dialect definitions
 #include "ToyDialectBase.cpp.inc"
 
+MLIR_DEFINE_EXPLICIT_TYPE_ID(toy::AssignOp)
+MLIR_DEFINE_EXPLICIT_TYPE_ID(toy::DeclOp)
+MLIR_DEFINE_EXPLICIT_TYPE_ID(toy::PrintOp)
+MLIR_DEFINE_EXPLICIT_TYPE_ID(toy::VarType)
+
 namespace toy {
 
 void ToyDialect::initialize() {
