@@ -81,7 +81,6 @@ target_compile_options(toycalculator PRIVATE
   -Wno-comment
   -Wno-overloaded-virtual
   -Wno-unused-parameter
-  -Wno-ambiguous-reversed-operator
   -g
   -fno-rtti
 )
