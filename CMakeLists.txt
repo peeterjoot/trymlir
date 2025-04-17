@@ -1,84 +1,73 @@
-cmake_minimum_required(VERSION 3.10)
-project(Calculator)
+cmake_minimum_required(VERSION 3.20)
+project(toycalculator)
 
-#set(CMAKE_CXX_STANDARD 23)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+# Find LLVM and MLIR
 find_package(LLVM REQUIRED CONFIG)
 find_package(MLIR REQUIRED CONFIG)
 
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-message(STATUS "Using MLIRConfig.cmake in: ${MLIR_DIR}")
+# Include MLIR CMake modules
+list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
+include(TableGen)
+include(AddLLVM)
+include(AddMLIR)
 
+# Set include directories
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_BINARY_DIR})
 
-link_directories(${LLVM_BUILD_LIBRARY_DIR})
-add_definitions(${LLVM_DEFINITIONS})
+# Define TableGen targets for Toy_Dialect.td
+set(LLVM_TARGET_DEFINITIONS ${CMAKE_SOURCE_DIR}/src/Toy_Dialect.td)
 
-# TableGen for dialect
-set(MLIR_TABLEGEN_EXE mlir-tblgen)
-set(TABLEGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-file(MAKE_DIRECTORY ${TABLEGEN_OUTPUT_DIR})
+# Generate operation declarations and definitions
+mlir_tablegen(ToyDialect.h.inc -gen-op-decls -dialect toy)
+mlir_tablegen(ToyDialect.cpp.inc -gen-op-defs -dialect toy)
 
-set(DIALECT_TD_FILE ${CMAKE_SOURCE_DIR}/src/ToyCalculatorDialect.td)
-set(DIALECT_H_INC ${TABLEGEN_OUTPUT_DIR}/ToyCalculatorDialect.h.inc)
-set(DIALECT_CPP_INC ${TABLEGEN_OUTPUT_DIR}/ToyCalculatorDialect.cpp.inc)
+# Generate type declarations and definitions
+mlir_tablegen(ToyDialectTypes.h.inc -gen-typedef-decls -dialect toy)
+mlir_tablegen(ToyDialectTypes.cpp.inc -gen-typedef-defs -dialect toy)
 
-add_custom_command(
-  OUTPUT ${DIALECT_H_INC}
-  COMMAND ${MLIR_TABLEGEN_EXE}
-    -gen-op-decls
-    -I ${MLIR_INCLUDE_DIRS}
-    -o ${DIALECT_H_INC}
-    ${DIALECT_TD_FILE}
-  DEPENDS ${DIALECT_TD_FILE}
-  COMMENT "Generating ToyCalculatorDialect.h.inc"
-)
+# Generate dialect declarations and definitions
+mlir_tablegen(ToyDialectBase.h.inc -gen-dialect-decls -dialect toy)
+mlir_tablegen(ToyDialectBase.cpp.inc -gen-dialect-defs -dialect toy)
 
-add_custom_command(
-  OUTPUT ${DIALECT_CPP_INC}
-  COMMAND ${MLIR_TABLEGEN_EXE}
-    -gen-op-defs
-    -I ${MLIR_INCLUDE_DIRS}
-    -o ${DIALECT_CPP_INC}
-    ${DIALECT_TD_FILE}
-  DEPENDS ${DIALECT_TD_FILE}
-  COMMENT "Generating ToyCalculatorDialect.cpp.inc"
-)
+# Create a custom target for TableGen outputs
+add_public_tablegen_target(ToyDialectIncGen)
 
-set(TABLEGEN_OUTPUT ${DIALECT_H_INC} ${DIALECT_CPP_INC})
-
+# Define the toycalculator executable
 add_executable(toycalculator
   src/driver.cpp
   src/ToyCalculatorDialect.cpp
 )
 
-# this is for compatibility with the llvm-build, which uses -fno-rtti by default:
-target_compile_options(toycalculator PRIVATE -fno-rtti)
-# for eventual use of std::format()
-target_compile_options(toycalculator PRIVATE -std=c++23)
-
-# Include the output directory for header files
-target_include_directories(toycalculator PRIVATE ${ANTLR_OUTPUT_DIR})
-
-add_custom_target(ToyCalculatorDialectInc DEPENDS ${TABLEGEN_OUTPUT})
-add_dependencies(toycalculator ToyCalculatorDialectInc)
-
-target_compile_options(toycalculator PRIVATE -Wall -Wextra -Wno-comment -Wno-overloaded-virtual -Wno-unused-parameter)
-#target_compile_options(toycalculator PRIVATE -O2)
-target_compile_options(toycalculator PRIVATE -g)
-
+# Link against MLIR and LLVM libraries
 target_link_directories(toycalculator PRIVATE /usr/local/llvm-20.1.2/lib64)
-
 target_link_libraries(toycalculator PRIVATE
-  LLVMCore
   LLVMSupport
+  LLVMCore
   MLIRIR
-  MLIRParser
   MLIRSupport
+  MLIRSideEffectInterfaces
+  MLIRParser
   MLIRTransforms
+  MLIRBytecodeReader
+  MLIRAsmParser
 )
+
+# Compile with -fno-rtti to match LLVM build
+# c++20 for std::format()
+target_compile_options(toycalculator PRIVATE
+  -std=c++20
+  -fno-rtti
+  -Wall
+  -Wextra
+  -Wno-comment
+  -Wno-overloaded-virtual
+  -Wno-unused-parameter
+  -g
+)
+
+# Ensure TableGen runs before building the executable
+add_dependencies(toycalculator ToyDialectIncGen)
