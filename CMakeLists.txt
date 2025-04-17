@@ -72,7 +72,6 @@ target_link_libraries(toycalculator PRIVATE
   MLIRTransforms
   MLIRBytecodeReader
   MLIRAsmParser
-  MLIRArith
 )
 
 target_compile_options(toycalculator PRIVATE
