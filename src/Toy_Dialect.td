@@ -44,10 +44,6 @@ def Toy_DeclOp : Op<Toy_Dialect, "decl"> {
   }];
 
   let traits = [Pure];
-
-//  let extraClassDeclaration = [{
-//    auto getOperationName() const { return "toy.decl"; }
-//  }];
 }
 
 // Operation: toy.assign (x = 5;)
