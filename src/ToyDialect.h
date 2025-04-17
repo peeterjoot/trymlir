@@ -5,6 +5,8 @@
 #include "mlir/IR/OpDefinition.h"
 #include "mlir/IR/TypeUtilities.h"
 #include "mlir/Interfaces/SideEffectInterfaces.h"
+#include "mlir/Bytecode/BytecodeOpInterface.h"
+#include "mlir/Interfaces/InferTypeOpInterface.h"
 
 // Include the generated type declarations
 #define GET_TYPEDEF_CLASSES
