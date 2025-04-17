@@ -40,6 +40,7 @@ int main( int argc, char **argv )
     mlir::OpBuilder builder( &context );
     builder.setInsertionPointToStart( module->getBody() );
 
+#if 0
     // Create toy.decl @x
     auto declOp = builder.create<toy::DeclOp>( getLocation( 1 ), "x" );
     auto var = declOp.getResult();
@@ -51,6 +52,7 @@ int main( int argc, char **argv )
 
     // Create toy.print @x
     builder.create<toy::PrintOp>( getLocation( 3 ), "x", var );
+#endif
 
     builder.setInsertionPointToEnd( module->getBody() );
 
