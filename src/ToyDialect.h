@@ -6,6 +6,7 @@
 #include "mlir/IR/Dialect.h"
 #include "mlir/IR/Operation.h"
 #include "mlir/IR/OpDefinition.h"
+#include "mlir/Support/TypeID.h"
 
 // Include generated dialect declarations
 #include "ToyDialectBase.h.inc"
