@@ -22,16 +22,16 @@ include_directories(${CMAKE_BINARY_DIR})
 set(LLVM_TARGET_DEFINITIONS ${CMAKE_SOURCE_DIR}/src/Toy_Dialect.td)
 
 # Generate operation declarations and definitions
-mlir_tablegen(ToyDialect.h.inc -gen-op-decls -dialect toy)
-mlir_tablegen(ToyDialect.cpp.inc -gen-op-defs -dialect toy)
+mlir_tablegen(ToyDialect.h.inc -gen-op-decls -dialect toy --op-exclude-regex "arith.*")
+mlir_tablegen(ToyDialect.cpp.inc -gen-op-defs -dialect toy --op-exclude-regex "arith.*")
 
 # Generate type declarations and definitions
-mlir_tablegen(ToyDialectTypes.h.inc -gen-typedef-decls -dialect toy)
-mlir_tablegen(ToyDialectTypes.cpp.inc -gen-typedef-defs -dialect toy)
+mlir_tablegen(ToyDialectTypes.h.inc -gen-typedef-decls -dialect toy --op-exclude-regex "arith.*")
+mlir_tablegen(ToyDialectTypes.cpp.inc -gen-typedef-defs -dialect toy --op-exclude-regex "arith.*")
 
 # Generate dialect declarations and definitions
-mlir_tablegen(ToyDialectBase.h.inc -gen-dialect-decls -dialect toy)
-mlir_tablegen(ToyDialectBase.cpp.inc -gen-dialect-defs -dialect toy)
+mlir_tablegen(ToyDialectBase.h.inc -gen-dialect-decls -dialect toy --op-exclude-regex "arith.*")
+mlir_tablegen(ToyDialectBase.cpp.inc -gen-dialect-defs -dialect toy --op-exclude-regex "arith.*")
 
 # Create a custom target for TableGen outputs
 add_public_tablegen_target(ToyDialectIncGen)
